@@ -1,0 +1,49 @@
+{% extends "index/base.html" %}
+{% block content %}  <!-- Comienza el bloque de contenido específico de esta plantilla -->
+<div class="container mt-3">
+    <h2>Productos por Stock</h2>  <!-- Encabezado indicando que se mostrarán productos según el stock -->
+    <form method="GET" action="{% url 'product_by_stock' %}" class="form-inline mb-3">
+        <div class="form-group mr-2">
+            <label for="min_stock">Mínimo:</label>
+            <input type="number" id="min_stock" name="min_stock" class="form-control mx-sm-2" placeholder="Mínimo">
+        </div>
+        <div class="form-group mr-2">
+            <label for="max_stock">Máximo:</label>
+            <input type="number" id="max_stock" name="max_stock" class="form-control mx-sm-2" placeholder="Máximo">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+    {% if products %}
+    <table class="table table-striped">  <!-- Comienza una tabla con estilos de Bootstrap -->
+        <thead>  <!-- Comienza la sección de encabezados de la tabla -->
+            <tr>  <!-- Comienza una fila de encabezado -->
+                <th>Nombre</th>  <!-- Celda de encabezado para el nombre del producto -->
+                <th>Descripción</th>  <!-- Celda de encabezado para la descripción del producto -->
+                <th>Precio</th>  <!-- Celda de encabezado para el precio del producto -->
+                <th>Categoría</th>  <!-- Celda de encabezado para la categoría del producto -->
+                <th>Stock</th>  <!-- Celda de encabezado para el stock del producto -->
+                <th>Acciones</th>  <!-- Celda de encabezado para las acciones sobre el producto -->
+            </tr>  <!-- Fin de la fila de encabezado -->
+        </thead>  <!-- Fin de la sección de encabezados de la tabla -->
+        <tbody>  <!-- Comienza la sección de cuerpo de la tabla -->
+            {% for product in products %}  <!-- Bucle para iterar sobre cada producto -->
+            <tr>  <!-- Comienza una fila de datos para un producto -->
+                <td>{{ product.name }}</td>  <!-- Celda de datos para el nombre del producto -->
+                <td>{{ product.description }}</td>  <!-- Celda de datos para la descripción del producto -->
+                <td>{{ product.price }}</td>  <!-- Celda de datos para el precio del producto -->
+                <td>{{ product.category.name }}</td>  <!-- Celda de datos para el nombre de la categoría del producto -->
+                <td>{{ product.stock }}</td>  <!-- Celda de datos para el stock del producto -->
+                <td>  <!-- Comienza una celda para las acciones sobre el producto -->
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-info btn-sm">Detalles</a>  <!-- Enlace para ver los detalles del producto -->
+                    <a href="{% url 'product_update' product.id %}" class="btn btn-success btn-sm">Editar</a>  <!-- Enlace para editar el producto -->
+                    <a href="{% url 'product_delete' product.id %}" class="btn btn-danger btn-sm">Eliminar</a>  <!-- Enlace para eliminar el producto -->
+                </td>  <!-- Fin de la celda de acciones -->
+            </tr>  <!-- Fin de la fila de datos para un producto -->
+            {% endfor %}  <!-- Fin del bucle -->
+        </tbody>  <!-- Fin de la sección de cuerpo de la tabla -->
+    </table>  <!-- Fin de la tabla -->
+    {% else %}
+    <p>No se encontraron productos con el stock especificado.</p>
+    {% endif %}
+</div>  <!-- Fin del contenedor -->
+{% endblock %}  <!-- Fin del bloque de contenido específico de esta plantilla -->

@@ -1,7 +1,8 @@
+# Imports necesarios
 from django.shortcuts import redirect, render
-
 from product.models import Category
 from product.repositories.product import ProductRepository
+
 
 # Crear una instancia del repositorio de productos
 repo = ProductRepository()
@@ -75,6 +76,7 @@ def product_update(request, id):
     )
 
 # Vista para crear un nuevo producto
+# Vista para crear un nuevo producto
 def product_create(request): 
     if request.method == "POST":
         # Obtener los datos del formulario
@@ -97,7 +99,7 @@ def product_create(request):
         # Redirigir a la página de detalles del nuevo producto
         return redirect('product_detail', producto_nuevo.id)
 
-    # Obtener todas las categorías disponibles para mostrar en el formulario
+    # Si la solicitud no es POST, mostrar el formulario vacío
     categorias = Category.objects.all()
     return render (
         request,
@@ -107,9 +109,52 @@ def product_create(request):
         )
     )
 
+
 # Vista de índice
 def index_view(request):
     return render(
         request,
         'index/index.html'
+    )
+
+def product_gte_stock_list(request):
+    min_stock = 0
+    max_stock = float('inf')
+    if request.method == "GET":
+        min_stock_str = request.GET.get('min_stock', '0')
+        max_stock_str = request.GET.get('max_stock', 'inf')
+        print("Valor mínimo de stock recibido en GET:", min_stock_str)
+        print("Valor máximo de stock recibido en GET:", max_stock_str)
+        
+        try:
+            min_stock = int(min_stock_str)
+            max_stock = int(max_stock_str)
+        except ValueError:
+            # En caso de que los valores ingresados no sean válidos, se mantienen los valores predeterminados
+            pass
+        
+        # Obtener productos cuyo stock esté dentro del rango especificado
+        productos = repo.get_product_stock_range(min_stock, max_stock)
+    else:
+        productos = repo.get_all()
+
+    return render(  
+        request,
+        'products/list.html',
+        dict(
+            products=productos,
+            min_stock=min_stock,
+            max_stock=max_stock
+        ) 
+    )
+
+
+def product_lte_stock_list(request):
+    productos = repo.get_product_lte_stock()  
+    return render(  
+        request,
+        'products/list.html',
+        dict(
+            products=productos  
+        ) 
     )
